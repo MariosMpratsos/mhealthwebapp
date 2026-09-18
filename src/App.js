@@ -16,8 +16,8 @@ import Supplements from './pages/Supplements';
 import Nutrition from './pages/Nutrition';
 import Profile from './pages/Profile';
 import SearchPage from './pages/SearchPage';  
-import Privacy from './pages/Privacy.html';   {/* NEW */}
-import Terms from './pages/Terms.html';  
+import Privacy from './pages/privacy.html';   {/* NEW */}
+import Terms from './pages/terms.html';  
 
 function App() {
   const { user } = useContext(AuthContext);
