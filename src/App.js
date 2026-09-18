@@ -17,6 +17,26 @@ import Nutrition from './pages/Nutrition';
 import Profile from './pages/Profile';
 import SearchPage from './pages/SearchPage';  
 
+// New: simple wrapper components that embed the static html files
+function Privacy() {
+  return (
+    <iframe
+      src="/privacy.html"
+      title="Privacy Policy"
+      style={{ width: '100%', height: '100vh', border: 'none' }}
+    />
+  );
+}
+
+function Terms() {
+  return (
+    <iframe
+      src="/terms.html"
+      title="Terms of Service"
+      style={{ width: '100%', height: '100vh', border: 'none' }}
+    />
+  );
+}
 
 function App() {
   const { user } = useContext(AuthContext);
@@ -43,6 +63,10 @@ function App() {
         }}
       >
         <Routes>
+          {/* Public routes - no auth required */}
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+
           <Route path="/" element={user ? <Navigate to="/summary" /> : <Login />} />
           <Route path="/summary" element={user ? <Summary /> : <Navigate to="/" />} />
           <Route path="/weights" element={user ? <WeightTraining /> : <Navigate to="/" />} />
