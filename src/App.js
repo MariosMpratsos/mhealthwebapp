@@ -16,8 +16,7 @@ import Supplements from './pages/Supplements';
 import Nutrition from './pages/Nutrition';
 import Profile from './pages/Profile';
 import SearchPage from './pages/SearchPage';  
-import Privacy from './pages/privacy.html';   {/* NEW */}
-import Terms from './pages/terms.html';  
+
 
 function App() {
   const { user } = useContext(AuthContext);
@@ -53,8 +52,6 @@ function App() {
           <Route path="/nutrition" element={user ? <Nutrition /> : <Navigate to="/" />} />
           <Route path="/search" element={user ? <SearchPage /> : <Navigate to="/" />} />
           <Route path="/article/:id" element={user ? <ArticlePage /> : <Navigate to="/" />} />
-          <Route path="/privacy" element={<Privacy />} />   {/* NEW */}
-          <Route path="/terms" element={<Terms />} />       {/* NEW */}
         </Routes>
       </Box>
     </Box>
