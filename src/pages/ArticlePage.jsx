@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Typography, Box, Button, Paper, Divider } from '@mui/material';
+import { Container, Typography, Button, Paper, Divider } from '@mui/material';
 import { MdArrowBack } from 'react-icons/md';
 import AuthContext from '../context/AuthContext';
 import Body from '../layout/Body';
