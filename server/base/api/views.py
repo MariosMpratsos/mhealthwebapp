@@ -70,13 +70,13 @@ ENV_PATH = BASE_DIR / ".env"
 print("DEBUG - ENV PATH:", ENV_PATH)
 print("DEBUG - ENV EXISTS:", ENV_PATH.exists())
 
-load_dotenv(dotenv_path=ENV_PATH, override=True)
+load_dotenv(dotenv_path=ENV_PATH, override=False)
 MY_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 print("DEBUG - READ KEY:", bool(MY_API_KEY))
 
 if not MY_API_KEY:
-    raise ValueError(f"Το GOOGLE_API_KEY δεν βρέθηκε στο .env: {ENV_PATH}")
+    raise ValueError("GOOGLE_API_KEY was not provided")
 
 os.environ.pop("GOOGLE_APPLICATION_CREDENTIALS", None)
 client = genai.Client(api_key=MY_API_KEY)
