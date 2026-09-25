@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { Box, Paper, Typography, Divider } from '@mui/material';
 import DefaultUserPic from '../media/user.png';
 import AuthContext from '../context/AuthContext';
@@ -13,7 +13,7 @@ const Profile = () => {
     email: ''
   });
 
-  const getProfileDetails = async () => {
+  const getProfileDetails = useCallback(async () => {
     try {
       const response = await fetch(
         'http://127.0.0.1:8000/api/profile/',
@@ -57,11 +57,11 @@ const Profile = () => {
     } catch (error) {
       console.error('Error fetching profile:', error);
     }
-  };
+  }, [authTokens]);
 
   useEffect(() => {
     getProfileDetails();
-  }, [authTokens]);
+  }, [getProfileDetails]);
 
   return (
     <Body>
