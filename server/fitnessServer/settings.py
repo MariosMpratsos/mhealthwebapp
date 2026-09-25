@@ -1,4 +1,4 @@
-```python
+
 """
 Django settings for fitnessServer project.
 
