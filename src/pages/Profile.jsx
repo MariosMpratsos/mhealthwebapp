@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Box, Paper, Typography, Divider } from '@mui/material';
 import DefaultUserPic from '../media/user.png';
 import AuthContext from '../context/AuthContext';
@@ -13,55 +13,50 @@ const Profile = () => {
     email: ''
   });
 
-  const getProfileDetails = useCallback(async () => {
-    try {
-      const response = await fetch(
-        'http://127.0.0.1:8000/api/profile/',
-        {
+  useEffect(() => {
+    const fetchProfileDetails = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/profile/', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + String(authTokens?.access)
           },
+        });
+
+        const data = await response.json();
+
+        let fName = data.first_name;
+        let lName = data.last_name;
+
+        // Fallback: derive name from email if empty
+        if (!fName || !lName) {
+          const namePart = data.email?.split('@')[0] || '';
+          const parts = namePart.split('.');
+
+          fName = fName || (
+            parts[0] ? parts[0].charAt(0).toUpperCase() + parts[0].slice(1) : ''
+          );
+
+          lName = lName || (
+            parts[1] ? parts[1].charAt(0).toUpperCase() + parts[1].slice(1) : ''
+          );
         }
-      );
 
-      const data = await response.json();
-
-      let fName = data.first_name;
-      let lName = data.last_name;
-
-      // Αν δεν υπάρχει όνομα, το φτιάχνει από το email
-      if (!fName || !lName) {
-        const namePart = data.email.split('@')[0];
-        const parts = namePart.split('.');
-
-        fName = fName || (
-          parts[0].charAt(0).toUpperCase() +
-          parts[0].slice(1)
-        );
-
-        lName = lName || (
-          parts[1]
-            ? parts[1].charAt(0).toUpperCase() +
-              parts[1].slice(1)
-            : ''
-        );
+        setProfile({
+          first_name: fName,
+          last_name: lName,
+          email: data.email
+        });
+      } catch (error) {
+        console.error('Error fetching profile:', error);
       }
+    };
 
-      setProfile({
-        first_name: fName,
-        last_name: lName,
-        email: data.email
-      });
-    } catch (error) {
-      console.error('Error fetching profile:', error);
+    if (authTokens?.access) {
+      fetchProfileDetails();
     }
-  }, [authTokens]);
-
-  useEffect(() => {
-    getProfileDetails();
-  }, [getProfileDetails]);
+  }, [authTokens?.access]);
 
   return (
     <Body>
@@ -148,19 +143,10 @@ const Profile = () => {
                 pb: 1
               }}
             >
-              <Typography
-                color="textSecondary"
-                sx={{ fontWeight: 'bold' }}
-              >
+              <Typography color="textSecondary" sx={{ fontWeight: 'bold' }}>
                 First Name:
               </Typography>
-
-              <Typography
-                sx={{
-                  fontWeight: 500,
-                  textAlign: 'right'
-                }}
-              >
+              <Typography sx={{ fontWeight: 500, textAlign: 'right' }}>
                 {profile.first_name || '—'}
               </Typography>
             </Box>
@@ -174,19 +160,10 @@ const Profile = () => {
                 pb: 1
               }}
             >
-              <Typography
-                color="textSecondary"
-                sx={{ fontWeight: 'bold' }}
-              >
+              <Typography color="textSecondary" sx={{ fontWeight: 'bold' }}>
                 Last Name:
               </Typography>
-
-              <Typography
-                sx={{
-                  fontWeight: 500,
-                  textAlign: 'right'
-                }}
-              >
+              <Typography sx={{ fontWeight: 500, textAlign: 'right' }}>
                 {profile.last_name || '—'}
               </Typography>
             </Box>
@@ -200,13 +177,9 @@ const Profile = () => {
                 pb: 1
               }}
             >
-              <Typography
-                color="textSecondary"
-                sx={{ fontWeight: 'bold' }}
-              >
+              <Typography color="textSecondary" sx={{ fontWeight: 'bold' }}>
                 Email:
               </Typography>
-
               <Typography
                 sx={{
                   fontWeight: 500,
@@ -215,7 +188,7 @@ const Profile = () => {
                   pl: 2
                 }}
               >
-                {profile.email}
+                {profile.email || '—'}
               </Typography>
             </Box>
           </Box>
