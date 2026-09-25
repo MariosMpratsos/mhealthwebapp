@@ -1,4 +1,3 @@
-import jsx
 import React, { useState, useEffect, useContext } from 'react';
 import { Box, Paper, Typography, Divider } from '@mui/material';
 import DefaultUserPic from '../media/user.png';
@@ -110,6 +109,7 @@ const Profile = () => {
                             component="img"
                             src={DefaultUserPic}
                             sx={{ height: '50px' }}
+                            alt="User Avatar"
                         />
                     </Box>
 
