@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main, develop, test-ci-cd]
+    branches: [main, test-ci-cd]
   pull_request:
-    branches: [main, develop, test-ci-cd]
+    branches: [main, test-ci-cd]
 
 jobs:
   test-backend:
@@ -61,6 +61,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Build Docker images
         run: docker compose build
