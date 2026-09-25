@@ -77,12 +77,13 @@ jobs:
 
 
   # ============================================================
-  # 3. DOCKER BUILD
+  # 3. DOCKER BUILD + LAYER CACHING
   # ============================================================
 
   docker-build:
     name: Docker Build
     runs-on: ubuntu-latest
+
     needs:
       - test-backend
       - build-frontend
@@ -94,8 +95,13 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build Docker images
-        run: docker compose build
+      - name: Build Docker images with cache
+        run: |
+          docker buildx bake \
+            --file docker-compose.yml \
+            --set '*.cache-from=type=gha' \
+            --set '*.cache-to=type=gha,mode=max' \
+            --load
 
 
   # ============================================================
@@ -103,8 +109,9 @@ jobs:
   # ============================================================
 
   image-tag:
-    name: Create Image Tag
+    name: Create Immutable Image Tag
     runs-on: ubuntu-latest
+
     needs: docker-build
 
     outputs:
@@ -115,7 +122,9 @@ jobs:
         id: tag
         run: |
           TAG="${GITHUB_SHA::7}"
+
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
           echo "Docker image tag: $TAG"
 
 
@@ -126,12 +135,13 @@ jobs:
   deploy-development:
     name: Deploy Development
     runs-on: ubuntu-latest
+
     needs: image-tag
+
+    if: github.ref == 'refs/heads/test-ci-cd'
 
     environment:
       name: development
-
-    if: github.ref == 'refs/heads/test-ci-cd'
 
     steps:
       - name: Deploy application
@@ -147,12 +157,13 @@ jobs:
   deploy-staging:
     name: Deploy Staging
     runs-on: ubuntu-latest
-    needs: deploy-development
+
+    needs: image-tag
+
+    if: github.ref == 'refs/heads/main'
 
     environment:
       name: staging
-
-    if: github.ref == 'refs/heads/main'
 
     steps:
       - name: Deploy application
@@ -168,12 +179,13 @@ jobs:
   deploy-production:
     name: Deploy Production
     runs-on: ubuntu-latest
+
     needs: deploy-staging
+
+    if: github.ref == 'refs/heads/main'
 
     environment:
       name: production
-
-    if: github.ref == 'refs/heads/main'
 
     steps:
       - name: Deploy application
@@ -189,6 +201,7 @@ jobs:
   health-check:
     name: Production Health Check
     runs-on: ubuntu-latest
+
     needs: deploy-production
 
     steps:
@@ -205,6 +218,7 @@ jobs:
   canary:
     name: Canary Deployment
     runs-on: ubuntu-latest
+
     needs: health-check
 
     environment:
@@ -230,10 +244,11 @@ jobs:
   canary-promotion:
     name: Promote Canary
     runs-on: ubuntu-latest
+
     needs: canary
 
     steps:
-      - name: Promote new version
+      - name: Promote canary
         run: |
           echo "Increasing traffic..."
           echo "50% -> new version"
