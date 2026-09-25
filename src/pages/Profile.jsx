@@ -1,4 +1,4 @@
-```jsx
+import jsx
 import React, { useState, useEffect, useContext } from 'react';
 import { Box, Paper, Typography, Divider } from '@mui/material';
 import DefaultUserPic from '../media/user.png';
@@ -7,6 +7,7 @@ import Body from '../layout/Body';
 
 const Profile = () => {
     const { authTokens } = useContext(AuthContext);
+
     const [profile, setProfile] = useState({
         first_name: '',
         last_name: '',
@@ -15,13 +16,17 @@ const Profile = () => {
 
     const getProfileDetails = async () => {
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/profile/', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + String(authTokens?.access)
-                },
-            });
+            const response = await fetch(
+                'http://127.0.0.1:8000/api/profile/',
+                {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization':
+                            'Bearer ' + String(authTokens?.access)
+                    },
+                }
+            );
 
             const data = await response.json();
 
@@ -40,7 +45,8 @@ const Profile = () => {
 
                 lName = lName || (
                     parts[1]
-                        ? parts[1].charAt(0).toUpperCase() + parts[1].slice(1)
+                        ? parts[1].charAt(0).toUpperCase() +
+                          parts[1].slice(1)
                         : ''
                 );
             }
@@ -50,9 +56,8 @@ const Profile = () => {
                 last_name: lName,
                 email: data.email
             });
-
         } catch (error) {
-            console.error("Error fetching profile:", error);
+            console.error('Error fetching profile:', error);
         }
     };
 
@@ -62,7 +67,6 @@ const Profile = () => {
 
     return (
         <Body>
-            {/* Εξωτερικό Box: Απλώνει σε όλο τον κενό χώρο και κεντράρει */}
             <Box
                 sx={{
                     display: 'flex',
@@ -75,8 +79,6 @@ const Profile = () => {
                     p: 2
                 }}
             >
-
-                {/* Η Κάρτα του Προφίλ - Μεγάλη και στη μέση */}
                 <Paper
                     sx={{
                         p: { xs: 3, md: 5 },
@@ -91,8 +93,6 @@ const Profile = () => {
                         backgroundColor: '#fff'
                     }}
                 >
-
-                    {/* Εικονίδιο Χρήστη */}
                     <Box
                         sx={{
                             height: 100,
@@ -132,7 +132,6 @@ const Profile = () => {
                         }}
                     />
 
-                    {/* Στοιχεία Χρήστη */}
                     <Box
                         sx={{
                             width: '100%',
@@ -141,7 +140,6 @@ const Profile = () => {
                             gap: 2.5
                         }}
                     >
-
                         <Box
                             sx={{
                                 display: 'flex',
@@ -221,7 +219,6 @@ const Profile = () => {
                                 {profile.email}
                             </Typography>
                         </Box>
-
                     </Box>
                 </Paper>
             </Box>
@@ -230,14 +227,3 @@ const Profile = () => {
 };
 
 export default Profile;
-```
-
-**Η μοναδική ουσιαστική αλλαγή** από τον δικό σου κώδικα είναι:
-
-`}, []);`
-
-→
-
-`}, [authTokens]);`
-
-Μετά κάνε commit και ξανατρέξε το Actions build.
