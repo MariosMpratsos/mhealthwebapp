@@ -1,3 +1,4 @@
+```jsx
 import React, { useState, useEffect, useContext } from 'react';
 import { Box, Paper, Typography, Divider } from '@mui/material';
 import DefaultUserPic from '../media/user.png';
@@ -21,6 +22,7 @@ const Profile = () => {
                     'Authorization': 'Bearer ' + String(authTokens?.access)
                 },
             });
+
             const data = await response.json();
 
             let fName = data.first_name;
@@ -30,9 +32,17 @@ const Profile = () => {
             if (!fName || !lName) {
                 const namePart = data.email.split('@')[0];
                 const parts = namePart.split('.');
-                
-                fName = fName || (parts[0].charAt(0).toUpperCase() + parts[0].slice(1));
-                lName = lName || (parts[1] ? parts[1].charAt(0).toUpperCase() + parts[1].slice(1) : '');
+
+                fName = fName || (
+                    parts[0].charAt(0).toUpperCase() +
+                    parts[0].slice(1)
+                );
+
+                lName = lName || (
+                    parts[1]
+                        ? parts[1].charAt(0).toUpperCase() + parts[1].slice(1)
+                        : ''
+                );
             }
 
             setProfile({
@@ -40,6 +50,7 @@ const Profile = () => {
                 last_name: lName,
                 email: data.email
             });
+
         } catch (error) {
             console.error("Error fetching profile:", error);
         }
@@ -47,75 +58,170 @@ const Profile = () => {
 
     useEffect(() => {
         getProfileDetails();
-    }, []);
+    }, [authTokens]);
 
     return (
         <Body>
             {/* Εξωτερικό Box: Απλώνει σε όλο τον κενό χώρο και κεντράρει */}
-            <Box sx={{ 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center',     
-                width: '100%',
-                minWidth: { md: '80vw' }, /* Τεντώνει τον χώρο στα δεξιά του μενού */
-                height: '100%',
-                minHeight: '85vh',
-                p: 2
-            }}>
-                
-                {/* Η Κάρτα του Προφίλ - Μεγάλη και στη μέση */}
-                <Paper sx={{ 
-                    p: { xs: 3, md: 5 }, 
-                    borderRadius: 4, 
-                    width: '100%',        
-                    maxWidth: '600px',   /* Μέγιστο πλάτος για να μην γίνει τεράστια */
-                    minWidth: '350px',   /* Ελάχιστο πλάτος για να μην ζουληχτεί */
-                    boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+            <Box
+                sx={{
                     display: 'flex',
-                    flexDirection: 'column',
+                    justifyContent: 'center',
                     alignItems: 'center',
-                    backgroundColor: '#fff'
-                }}>
-                    
+                    width: '100%',
+                    minWidth: { md: '80vw' },
+                    height: '100%',
+                    minHeight: '85vh',
+                    p: 2
+                }}
+            >
+
+                {/* Η Κάρτα του Προφίλ - Μεγάλη και στη μέση */}
+                <Paper
+                    sx={{
+                        p: { xs: 3, md: 5 },
+                        borderRadius: 4,
+                        width: '100%',
+                        maxWidth: '600px',
+                        minWidth: '350px',
+                        boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        backgroundColor: '#fff'
+                    }}
+                >
+
                     {/* Εικονίδιο Χρήστη */}
-                    <Box sx={{ 
-                        height: 100, 
-                        width: 100, 
-                        backgroundColor: '#f3e5f5', 
-                        borderRadius: '50%', 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'center',
-                        mb: 2,
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
-                    }}>
-                        <Box component='img' src={DefaultUserPic} sx={{ height: '50px' }} />
+                    <Box
+                        sx={{
+                            height: 100,
+                            width: 100,
+                            backgroundColor: '#f3e5f5',
+                            borderRadius: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            mb: 2,
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+                        }}
+                    >
+                        <Box
+                            component="img"
+                            src={DefaultUserPic}
+                            sx={{ height: '50px' }}
+                        />
                     </Box>
-                    
-                    <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#1a2027', mb: 1 }}>
+
+                    <Typography
+                        variant="h5"
+                        sx={{
+                            fontWeight: 'bold',
+                            color: '#1a2027',
+                            mb: 1
+                        }}
+                    >
                         My Profile
                     </Typography>
 
-                    <Divider sx={{ width: '100%', mb: 4, mt: 1 }} />
+                    <Divider
+                        sx={{
+                            width: '100%',
+                            mb: 4,
+                            mt: 1
+                        }}
+                    />
 
                     {/* Στοιχεία Χρήστη */}
-                    <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-                        
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f0f0f0', pb: 1 }}>
-                            <Typography color="textSecondary" sx={{ fontWeight: 'bold' }}>First Name:</Typography>
-                            <Typography sx={{ fontWeight: 500, textAlign: 'right' }}>{profile.first_name || '—'}</Typography>
+                    <Box
+                        sx={{
+                            width: '100%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 2.5
+                        }}
+                    >
+
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                borderBottom: '1px solid #f0f0f0',
+                                pb: 1
+                            }}
+                        >
+                            <Typography
+                                color="textSecondary"
+                                sx={{ fontWeight: 'bold' }}
+                            >
+                                First Name:
+                            </Typography>
+
+                            <Typography
+                                sx={{
+                                    fontWeight: 500,
+                                    textAlign: 'right'
+                                }}
+                            >
+                                {profile.first_name || '—'}
+                            </Typography>
                         </Box>
-                        
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f0f0f0', pb: 1 }}>
-                            <Typography color="textSecondary" sx={{ fontWeight: 'bold' }}>Last Name:</Typography>
-                            <Typography sx={{ fontWeight: 500, textAlign: 'right' }}>{profile.last_name || '—'}</Typography>
+
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                borderBottom: '1px solid #f0f0f0',
+                                pb: 1
+                            }}
+                        >
+                            <Typography
+                                color="textSecondary"
+                                sx={{ fontWeight: 'bold' }}
+                            >
+                                Last Name:
+                            </Typography>
+
+                            <Typography
+                                sx={{
+                                    fontWeight: 500,
+                                    textAlign: 'right'
+                                }}
+                            >
+                                {profile.last_name || '—'}
+                            </Typography>
                         </Box>
-                        
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f0f0f0', pb: 1 }}>
-                            <Typography color="textSecondary" sx={{ fontWeight: 'bold' }}>Email:</Typography>
-                            <Typography sx={{ fontWeight: 500, wordBreak: 'break-all', textAlign: 'right', pl: 2 }}>{profile.email}</Typography>
+
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                borderBottom: '1px solid #f0f0f0',
+                                pb: 1
+                            }}
+                        >
+                            <Typography
+                                color="textSecondary"
+                                sx={{ fontWeight: 'bold' }}
+                            >
+                                Email:
+                            </Typography>
+
+                            <Typography
+                                sx={{
+                                    fontWeight: 500,
+                                    wordBreak: 'break-all',
+                                    textAlign: 'right',
+                                    pl: 2
+                                }}
+                            >
+                                {profile.email}
+                            </Typography>
                         </Box>
-                        
+
                     </Box>
                 </Paper>
             </Box>
@@ -124,3 +230,14 @@ const Profile = () => {
 };
 
 export default Profile;
+```
+
+**Η μοναδική ουσιαστική αλλαγή** από τον δικό σου κώδικα είναι:
+
+`}, []);`
+
+→
+
+`}, [authTokens]);`
+
+Μετά κάνε commit και ξανατρέξε το Actions build.
