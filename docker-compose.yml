@@ -1,0 +1,21 @@
+services:
+
+  backend:
+    build:
+      context: .
+      dockerfile: server/dockerfile
+    container_name: mhealth-backend
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: dockerfile
+    container_name: mhealth-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
