@@ -7,8 +7,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  BACKEND_IMAGE: tags: ghcr.io/mariosmpratsos/mhealthwebapp/mhealth-backend:latest
-  FRONTEND_IMAGE: tags: ghcr.io/mariosmpratsos/mhealthwebapp/mhealth-frontend:latest
+  tags: ghcr.io/mariosmpratsos/mhealthwebapp/mhealth-backend:latest
+  tags: ghcr.io/mariosmpratsos/mhealthwebapp/mhealth-frontend:latest
 
 jobs:
   build-and-push:
