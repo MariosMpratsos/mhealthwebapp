@@ -3,8 +3,17 @@
   become: yes
   vars:
     remote_dir: "/opt/mhealth"
+    # Image names on GHCR must be lowercase
+    github_repository: "{{ lookup('env', 'GITHUB_REPOSITORY') | lower }}"
+    ghcr_user: "{{ lookup('env', 'GHCR_USER') }}"
+    ghcr_token: "{{ lookup('env', 'GHCR_TOKEN') }}"
 
   tasks:
+    - name: Fail early if GITHUB_REPOSITORY is missing
+      assert:
+        that: github_repository | length > 0
+        fail_msg: "GITHUB_REPOSITORY is not set on the runner"
+
     - name: Install system dependencies & Docker packages
       apt:
         update_cache: yes
@@ -14,6 +23,7 @@
           - gnupg
           - docker.io
           - docker-compose-v2
+          - python3-docker
         state: present
 
     - name: Ensure Docker daemon is enabled and running
@@ -32,14 +42,25 @@
       copy:
         src: "{{ item.src }}"
         dest: "{{ remote_dir }}/{{ item.dest }}"
+        mode: "{{ item.mode | default(omit) }}"
       loop:
         - { src: "../../docker-compose.yml", dest: "docker-compose.yml" }
-        - { src: "../../.env", dest: ".env" }
+        - { src: "../../.env", dest: ".env", mode: "0600" }
         - { src: "../../nginx/", dest: "nginx/" }
         - { src: "../../monitoring/", dest: "monitoring/" }
+
+    - name: Log in to GHCR on the VPS (needed for private packages)
+      community.docker.docker_login:
+        registry_url: ghcr.io
+        username: "{{ ghcr_user }}"
+        password: "{{ ghcr_token }}"
+      when: ghcr_token | length > 0
+      no_log: true
 
     - name: Pull latest images and restart containers
       community.docker.docker_compose_v2:
         project_src: "{{ remote_dir }}"
         state: present
         pull: always
+      environment:
+        GITHUB_REPOSITORY: "{{ github_repository }}"
