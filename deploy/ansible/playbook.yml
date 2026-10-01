@@ -1,0 +1,45 @@
+- name: Deploy and Manage mHealth Stack
+  hosts: vps
+  become: yes
+  vars:
+    remote_dir: "/opt/mhealth"
+
+  tasks:
+    - name: Install system dependencies & Docker packages
+      apt:
+        update_cache: yes
+        pkg:
+          - ca-certificates
+          - curl
+          - gnupg
+          - docker.io
+          - docker-compose-v2
+        state: present
+
+    - name: Ensure Docker daemon is enabled and running
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Create remote project folder
+      file:
+        path: "{{ remote_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Synchronize configuration and compose files
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ remote_dir }}/{{ item.dest }}"
+      loop:
+        - { src: "../../docker-compose.yml", dest: "docker-compose.yml" }
+        - { src: "../../.env", dest: ".env" }
+        - { src: "../../nginx/", dest: "nginx/" }
+        - { src: "../../monitoring/", dest: "monitoring/" }
+
+    - name: Pull latest images and restart containers
+      community.docker.docker_compose_v2:
+        project_src: "{{ remote_dir }}"
+        state: present
+        pull: always
