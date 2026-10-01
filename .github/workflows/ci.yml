@@ -7,17 +7,20 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  tags: ghcr.io/mariosmpratsos/mhealthwebapp/mhealth-backend:latest
-  tags: ghcr.io/mariosmpratsos/mhealthwebapp/mhealth-frontend:latest
+  BACKEND_IMAGE: ghcr.io/mariosmpratsos/mhealthwebapp/mhealth-backend
+  FRONTEND_IMAGE: ghcr.io/mariosmpratsos/mhealthwebapp/mhealth-frontend
 
 jobs:
+
   build-and-push:
     runs-on: ubuntu-latest
+
     permissions:
       contents: read
       packages: write
 
     steps:
+
       - name: Checkout Code
         uses: actions/checkout@v4
 
@@ -44,11 +47,13 @@ jobs:
           push: true
           tags: ${{ env.FRONTEND_IMAGE }}:latest
 
+
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Checkout Code
         uses: actions/checkout@v4
 
@@ -70,6 +75,7 @@ jobs:
       - name: Prepare Local Environment & Inventory
         run: |
           echo "${{ secrets.ENV_FILE }}" > .env
+
           echo "[vps]" > inventory.ini
           echo "${{ secrets.VPS_HOST }} ansible_user=${{ secrets.VPS_USER }}" >> inventory.ini
 
