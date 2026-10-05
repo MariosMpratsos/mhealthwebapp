@@ -1,21 +1,34 @@
+```yaml
 - name: Deploy and Manage mHealth Stack
   hosts: vps
   become: yes
+
   vars:
     remote_dir: "/opt/mhealth"
-    # Image names on GHCR must be lowercase
+
     github_repository: "{{ lookup('env', 'GITHUB_REPOSITORY') | lower }}"
+
     ghcr_user: "{{ lookup('env', 'GHCR_USER') }}"
+
     ghcr_token: "{{ lookup('env', 'GHCR_TOKEN') }}"
 
   tasks:
+
     - name: Fail early if GITHUB_REPOSITORY is missing
-      assert:
-        that: github_repository | length > 0
+      ansible.builtin.assert:
+        that:
+          - github_repository | length > 0
         fail_msg: "GITHUB_REPOSITORY is not set on the runner"
 
-    - name: Install system dependencies & Docker packages
-      apt:
+    - name: Fail early if GHCR credentials are missing
+      ansible.builtin.assert:
+        that:
+          - ghcr_user | length > 0
+          - ghcr_token | length > 0
+        fail_msg: "GHCR credentials are not available"
+
+    - name: Install system dependencies and Docker packages
+      ansible.builtin.apt:
         update_cache: yes
         pkg:
           - ca-certificates
@@ -26,35 +39,41 @@
           - python3-docker
         state: present
 
-    - name: Ensure Docker daemon is enabled and running
-      systemd:
+    - name: Ensure Docker daemon is running
+      ansible.builtin.service:
         name: docker
         state: started
-        enabled: yes
 
     - name: Create remote project folder
-      file:
+      ansible.builtin.file:
         path: "{{ remote_dir }}"
         state: directory
-        mode: '0755'
+        mode: "0755"
 
-    - name: Synchronize configuration and compose files
-      copy:
+    - name: Synchronize Docker Compose configuration
+      ansible.builtin.copy:
         src: "{{ item.src }}"
         dest: "{{ remote_dir }}/{{ item.dest }}"
         mode: "{{ item.mode | default(omit) }}"
       loop:
-        - { src: "../../docker-compose.yml", dest: "docker-compose.yml" }
-        - { src: "../../.env", dest: ".env", mode: "0600" }
-        - { src: "../../nginx/", dest: "nginx/" }
-        - { src: "../../monitoring/", dest: "monitoring/" }
+        - src: "../../docker-compose.yml"
+          dest: "docker-compose.yml"
 
-    - name: Log in to GHCR on the VPS (needed for private packages)
+        - src: "../../.env"
+          dest: ".env"
+          mode: "0600"
+
+        - src: "../../nginx/"
+          dest: "nginx/"
+
+        - src: "../../monitoring/"
+          dest: "monitoring/"
+
+    - name: Log in to GHCR on the VPS
       community.docker.docker_login:
         registry_url: ghcr.io
         username: "{{ ghcr_user }}"
         password: "{{ ghcr_token }}"
-      when: ghcr_token | length > 0
       no_log: true
 
     - name: Pull latest images and restart containers
@@ -64,3 +83,4 @@
         pull: always
       environment:
         GITHUB_REPOSITORY: "{{ github_repository }}"
+```

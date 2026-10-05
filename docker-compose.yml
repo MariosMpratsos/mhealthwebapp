@@ -1,10 +1,16 @@
 services:
+
   backend:
     image: ghcr.io/${GITHUB_REPOSITORY}/mhealth-backend:latest
     container_name: mhealth-backend
     restart: unless-stopped
+
     env_file:
       - .env
+
+    volumes:
+      - ./.env:/app/.env:ro
+
     expose:
       - "8000"
 
@@ -12,8 +18,10 @@ services:
     image: ghcr.io/${GITHUB_REPOSITORY}/mhealth-frontend:latest
     container_name: mhealth-frontend
     restart: unless-stopped
+
     expose:
       - "80"
+
     depends_on:
       - backend
 
@@ -21,13 +29,16 @@ services:
     image: nginx:1.22.1
     container_name: mhealth-nginx
     restart: unless-stopped
+
     ports:
       - "80:80"
       - "443:443"
+
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./certbot/www:/var/www/certbot:ro
       - ./certbot/conf:/etc/letsencrypt:ro
+
     depends_on:
       - frontend
       - backend
@@ -36,6 +47,7 @@ services:
   certbot:
     image: certbot/certbot:latest
     container_name: mhealth-certbot
+
     volumes:
       - ./certbot/www:/var/www/certbot
       - ./certbot/conf:/etc/letsencrypt
@@ -44,11 +56,14 @@ services:
     image: prom/prometheus:latest
     container_name: mhealth-prometheus
     restart: unless-stopped
+
     ports:
       - "9090:9090"
+
     volumes:
       - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus-data:/prometheus
+
     depends_on:
       - backend
 
@@ -56,16 +71,20 @@ services:
     image: grafana/grafana:latest
     container_name: mhealth-grafana
     restart: unless-stopped
+
     ports:
       - "3001:3000"
+
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
       - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s/grafana/
       - GF_SERVER_SERVE_FROM_SUB_PATH=true
+
     volumes:
       - grafana-data:/var/lib/grafana
       - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+
     depends_on:
       - prometheus
 
