@@ -46,7 +46,8 @@ jobs:
           file: dockerfile
           push: true
           tags: ${{ env.FRONTEND_IMAGE }}:latest
-
+          build-args: |
+            REACT_APP_GOOGLE_CLIENT_ID=${{ secrets.REACT_APP_GOOGLE_CLIENT_ID }}
 
   deploy:
     needs: build-and-push
