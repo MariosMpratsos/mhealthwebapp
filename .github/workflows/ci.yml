@@ -49,9 +49,14 @@ jobs:
           build-args: |
             REACT_APP_GOOGLE_CLIENT_ID=${{ secrets.REACT_APP_GOOGLE_CLIENT_ID }}
 
+
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: read
 
     steps:
 
@@ -73,6 +78,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ansible
 
+      - name: Install Ansible Docker Collection
+        run: |
+          ansible-galaxy collection install community.docker
+
       - name: Prepare Local Environment & Inventory
         run: |
           echo "${{ secrets.ENV_FILE }}" > .env
@@ -83,5 +92,9 @@ jobs:
       - name: Run Ansible Deployment Playbook
         env:
           GITHUB_REPOSITORY: ${{ github.repository }}
+          GHCR_USER: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          ansible-playbook -i inventory.ini deploy/ansible/playbook.yml
+          ansible-playbook \
+            -i inventory.ini \
+            deploy/ansible/playbook.yml
