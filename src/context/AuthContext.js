@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }) => {
         setAuthError(null);
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/token/', {
+            const response = await fetch('/api/token/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
@@ -75,7 +75,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('google_access_token', googleResponse.access_token);
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/google-login/', {
+            const response = await fetch('/api/google-login/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 'access_token': googleResponse.access_token })
@@ -114,7 +114,7 @@ export const AuthProvider = ({ children }) => {
         }
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/token/refresh/', {
+            const response = await fetch('/api/token/refresh/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 'refresh': authTokenRef.current.refresh })

@@ -16,7 +16,7 @@ const CardioLog = ({ cardioLog, setTotalCardio }) => {
     if (!cardioLog || !cardioLog.id) return null;
 
     const refreshLog = async () => {
-        const response = await fetch('http://127.0.0.1:8000/api/cardio/', {
+        const response = await fetch('/api/cardio/', {
             method: 'GET',
             headers: { 'Authorization': 'Bearer ' + String(authTokens?.access) }
         })
@@ -26,7 +26,7 @@ const CardioLog = ({ cardioLog, setTotalCardio }) => {
 
     const deleteWorkout = async () => {
         if (window.confirm("Delete this entry?")) {
-            const res = await fetch(`http://127.0.0.1:8000/api/cardio/${cardioLog.id}/`, {
+            const res = await fetch(`/api/cardio/${cardioLog.id}/`, {
                 method: 'DELETE',
                 headers: { 'Authorization': 'Bearer ' + String(authTokens?.access) }
             })
@@ -35,7 +35,7 @@ const CardioLog = ({ cardioLog, setTotalCardio }) => {
     }
 
     const editWorkout = async () => {
-        const res = await fetch(`http://127.0.0.1:8000/api/cardio/${cardioLog.id}/`, {
+        const res = await fetch(`/api/cardio/${cardioLog.id}/`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + String(authTokens?.access) },
             body: JSON.stringify({ 'date': date, 'name': name, 'duration': duration })

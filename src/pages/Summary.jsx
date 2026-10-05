@@ -85,9 +85,9 @@ const Summary = () => {
             
             try {
                 const [resW, resC, resS] = await Promise.all([
-                    fetch('http://127.0.0.1:8000/api/weight/', { headers: h }),
-                    fetch('http://127.0.0.1:8000/api/cardio/', { headers: h }),
-                    fetch('http://127.0.0.1:8000/api/supplement/', { headers: h })
+                    fetch('/api/weight/', { headers: h }),
+                    fetch('/api/cardio/', { headers: h }),
+                    fetch('/api/supplement/', { headers: h })
                 ]);
                 const weights = await resW.json();
                 const cardio = await resC.json();
@@ -99,7 +99,7 @@ const Summary = () => {
                 let currentSteps = 0;
                 
                 if (gToken) {
-                    const resSteps = await fetch('http://127.0.0.1:8000/api/google-steps-weekly/', {
+                    const resSteps = await fetch('/api/google-steps-weekly/', {
                         method: 'POST', 
                         headers: h, 
                         body: JSON.stringify({ "google_access_token": gToken })
@@ -115,7 +115,7 @@ const Summary = () => {
                 setData({ weights, cardio, supps, steps: stepsData });
                 
                 try {
-                    const aiRes = await fetch('http://127.0.0.1:8000/api/predict-daily-plan/', {
+                    const aiRes = await fetch('/api/predict-daily-plan/', {
                         method: 'POST',
                         headers: h,
                         body: JSON.stringify({ steps: currentSteps })

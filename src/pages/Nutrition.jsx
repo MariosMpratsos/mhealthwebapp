@@ -31,7 +31,7 @@ const Nutrition = memo(() => {
             if (!authTokens?.access) return;
             try {
                 // ΠΡΟΣΟΧΗ: Το URL πρέπει να είναι αυτό που έβαλες στο Django urls.py
-                const response = await fetch('http://127.0.0.1:8000/api/nutrition-history/', {
+                const response = await fetch('/api/nutrition-history/', {
                     method: 'GET',
                     headers: { 
                         'Authorization': 'Bearer ' + String(authTokens.access),
@@ -77,7 +77,7 @@ const Nutrition = memo(() => {
         formData.append('image', imageFile);
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/analyze-nutrition/', {
+            const response = await fetch('/api/analyze-nutrition/', {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer ' + String(authTokens.access) },
                 body: formData

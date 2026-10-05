@@ -27,7 +27,7 @@ const CardioInput = ({ setTotalCardio }) => {
         const mins = (totalMins % 60).toString().padStart(2, '0');
         const formattedDuration = `${hrs}:${mins}:00`;
 
-        const response = await fetch('http://127.0.0.1:8000/api/cardio/', {
+        const response = await fetch('/api/cardio/', {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json', 
@@ -44,7 +44,7 @@ const CardioInput = ({ setTotalCardio }) => {
             setName(''); 
             setDurationMinutes(''); 
             
-            const res = await fetch('http://127.0.0.1:8000/api/cardio/', {
+            const res = await fetch('/api/cardio/', {
                 method: 'GET',
                 headers: { 'Authorization': 'Bearer ' + String(authTokens?.access) }
             })

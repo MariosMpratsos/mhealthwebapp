@@ -13,7 +13,7 @@ const WeightTraining = () => {
 
     const getLog = useCallback(async () => {
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/weight/', {
+            const response = await fetch('/api/weight/', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

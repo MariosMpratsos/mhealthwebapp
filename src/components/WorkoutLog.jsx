@@ -19,7 +19,7 @@ const WorkoutLog = ({ workoutLog, setTotalWorkouts }) => {
     if (!workoutLog || !workoutLog.id) return null;
 
     const refreshLog = async () => {
-        const response = await fetch('http://127.0.0.1:8000/api/weight/', {
+        const response = await fetch('/api/weight/', {
             method: 'GET',
             headers: { 'Authorization': 'Bearer ' + String(authTokens?.access) }
         })
@@ -29,7 +29,7 @@ const WorkoutLog = ({ workoutLog, setTotalWorkouts }) => {
 
     const deleteWorkout = async () => {
         if (window.confirm("Delete this workout?")) {
-            const res = await fetch(`http://127.0.0.1:8000/api/weight/${workoutLog.id}/`, {
+            const res = await fetch(`/api/weight/${workoutLog.id}/`, {
                 method: 'DELETE',
                 headers: { 'Authorization': 'Bearer ' + String(authTokens?.access) }
             })
@@ -38,7 +38,7 @@ const WorkoutLog = ({ workoutLog, setTotalWorkouts }) => {
     }
 
     const editWorkout = async () => {
-        const res = await fetch(`http://127.0.0.1:8000/api/weight/${workoutLog.id}/`, {
+        const res = await fetch(`/api/weight/${workoutLog.id}/`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + String(authTokens?.access) },
             body: JSON.stringify({ 'date': date, 'name': name, 'reps': reps, 'sets': sets })

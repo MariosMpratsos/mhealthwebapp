@@ -13,7 +13,7 @@ const WorkoutInput = ({ setTotalWorkouts }) => {
 
     const onSubmitHandler = async (e) => {
         e.preventDefault()
-        const response = await fetch('http://127.0.0.1:8000/api/weight/', {
+        const response = await fetch('/api/weight/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + String(authTokens?.access) },
             body: JSON.stringify({ 'date': date, 'name': workout, 'reps': reps, 'sets': sets })
@@ -21,7 +21,7 @@ const WorkoutInput = ({ setTotalWorkouts }) => {
 
         if (response.ok) {
             setWorkout(''); setReps(''); setSets('');
-            const res = await fetch('http://127.0.0.1:8000/api/weight/', {
+            const res = await fetch('/api/weight/', {
                 method: 'GET',
                 headers: { 'Authorization': 'Bearer ' + String(authTokens?.access) }
             })

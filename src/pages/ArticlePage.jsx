@@ -13,7 +13,7 @@ const ArticlePage = () => {
 
     useEffect(() => {
         const fetchArticle = async () => {
-            const response = await fetch(`http://127.0.0.1:8000/api/article/${id}/`, {
+            const response = await fetch(`/api/article/${id}/`, {
                 method: 'GET',
                 headers: { 'Authorization': 'Bearer ' + String(authTokens.access) }
             });

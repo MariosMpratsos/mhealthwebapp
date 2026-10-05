@@ -12,7 +12,7 @@ const ProfileForm = ({ firstName, lastName, email, setEdit, getProfileDetails })
 
     const onSubmitHandler = async (e) => {
         e.preventDefault()
-        await fetch('http://127.0.0.1:8000/api/profile/', {
+        await fetch('/api/profile/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

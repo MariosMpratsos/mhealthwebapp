@@ -16,7 +16,7 @@ const Supplements = () => {
     useEffect(() => {
         const getLog = async () => {
             try {
-                const response = await fetch('http://127.0.0.1:8000/api/supplement/', {
+                const response = await fetch('/api/supplement/', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',

@@ -18,7 +18,7 @@ const SearchPage = () => {
         const fetchResults = async () => {
             setLoading(true);
             try {
-                const response = await fetch(`http://127.0.0.1:8000/api/search/?q=${query}`, {
+                const response = await fetch(`/api/search/?q=${query}`, {
                     method: 'GET',
                     headers: { 'Authorization': 'Bearer ' + String(authTokens.access) }
                 });

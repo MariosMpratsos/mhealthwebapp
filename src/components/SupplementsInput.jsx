@@ -13,7 +13,7 @@ const SupplementsInput = ({ setTotalSupplements }) => {
     const onSubmitHandler = async (e) => {
         e.preventDefault()
 
-        const response = await fetch('http://127.0.0.1:8000/api/supplement/', {
+        const response = await fetch('/api/supplement/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -32,7 +32,7 @@ const SupplementsInput = ({ setTotalSupplements }) => {
             setDossage('')
             
             const getLog = async () => {
-                const response = await fetch('http://127.0.0.1:8000/api/supplement/', {
+                const response = await fetch('/api/supplement/', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
