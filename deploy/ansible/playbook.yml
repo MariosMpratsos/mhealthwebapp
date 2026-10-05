@@ -83,4 +83,3 @@
         pull: always
       environment:
         GITHUB_REPOSITORY: "{{ github_repository }}"
-```
