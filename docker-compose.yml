@@ -5,14 +5,13 @@ services:
     container_name: mhealth-backend
     restart: unless-stopped
 
-    env_file:
-      - .env
-
-    volumes:
-      - ./.env:/app/.env:ro
+    environment:
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
 
     expose:
       - "8000"
+
+    command: gunicorn --bind 0.0.0.0:8000 --workers 3 fitnessServer.wsgi:application
 
 
   frontend:
@@ -81,10 +80,10 @@ services:
       - "3001:3000"
 
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-      - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s/grafana/
-      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_SERVER_ROOT_URL: "%(protocol)s://%(domain)s/grafana/"
+      GF_SERVER_SERVE_FROM_SUB_PATH: "true"
 
     volumes:
       - grafana-data:/var/lib/grafana

@@ -11,6 +11,8 @@
 
     ghcr_token: "{{ lookup('env', 'GHCR_TOKEN') }}"
 
+    google_api_key: "{{ lookup('env', 'GOOGLE_API_KEY') }}"
+
   tasks:
 
     - name: Fail early if GITHUB_REPOSITORY is missing
@@ -26,6 +28,13 @@
           - ghcr_user | length > 0
           - ghcr_token | length > 0
         fail_msg: "GHCR credentials are not available"
+
+
+    - name: Fail early if GOOGLE_API_KEY is missing
+      ansible.builtin.assert:
+        that:
+          - google_api_key | length > 0
+        fail_msg: "GOOGLE_API_KEY is not available"
 
 
     - name: Install system dependencies and Docker packages
@@ -61,13 +70,6 @@
         mode: "0644"
 
 
-    - name: Copy production environment file
-      ansible.builtin.copy:
-        src: "../../.env"
-        dest: "{{ remote_dir }}/.env"
-        mode: "0600"
-
-
     - name: Copy Nginx configuration
       ansible.builtin.copy:
         src: "../../nginx/"
@@ -95,3 +97,4 @@
         pull: always
       environment:
         GITHUB_REPOSITORY: "{{ github_repository }}"
+        GOOGLE_API_KEY: "{{ google_api_key }}"
