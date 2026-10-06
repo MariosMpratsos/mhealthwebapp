@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-e_lkntg*71bn@%0ug)6pl(tk_#cw5^a%ux+#iy0h320(o9ty4@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [backend,169.58.201.189]
+ALLOWED_HOSTS = ["backend", "169.58.201.189", "bratsos.online", "www.bratsos.online", "localhost", "127.0.0.1","https://bratoss.online"]
 
 
 # Application definition
