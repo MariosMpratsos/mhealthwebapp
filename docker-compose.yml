@@ -8,11 +8,15 @@ services:
     environment:
       GOOGLE_API_KEY: ${GOOGLE_API_KEY}
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      SQLITE_PATH: /data/db.sqlite3
 
     expose:
       - "8000"
 
-    command: gunicorn --bind 0.0.0.0:8000 --workers 3 fitnessServer.wsgi:application
+    volumes:
+      - backend-data:/data
+
+    command: sh -c "python manage.py migrate --noinput && gunicorn --bind 0.0.0.0:8000 --workers 3 fitnessServer.wsgi:application"
 
 
   frontend:
@@ -97,3 +101,4 @@ services:
 volumes:
   prometheus-data:
   grafana-data:
+  backend-data:
