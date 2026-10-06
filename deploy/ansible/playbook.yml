@@ -1,4 +1,3 @@
-```yaml
 - name: Deploy and Manage mHealth Stack
   hosts: vps
   become: yes
@@ -95,4 +94,3 @@
         GOOGLE_API_KEY: "{{ google_api_key }}"
         DJANGO_SECRET_KEY: "{{ django_secret_key }}"
       no_log: true
-```
