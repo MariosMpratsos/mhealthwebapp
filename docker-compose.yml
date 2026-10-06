@@ -1,18 +1,18 @@
 services:
 
   backend:
-  image: ghcr.io/${GITHUB_REPOSITORY}/mhealth-backend:latest
-  container_name: mhealth-backend
-  restart: unless-stopped
+    image: ghcr.io/${GITHUB_REPOSITORY}/mhealth-backend:latest
+    container_name: mhealth-backend
+    restart: unless-stopped
 
-  environment:
-    GOOGLE_API_KEY: ${GOOGLE_API_KEY}
-    DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+    environment:
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
 
-  expose:
-    - "8000"
+    expose:
+      - "8000"
 
-  command: gunicorn --bind 0.0.0.0:8000 --workers 3 fitnessServer.wsgi:application
+    command: gunicorn --bind 0.0.0.0:8000 --workers 3 fitnessServer.wsgi:application
 
 
   frontend:
