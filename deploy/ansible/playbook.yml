@@ -1,4 +1,5 @@
 - name: Deploy and Manage mHealth Stack
+
   hosts: vps
   become: yes
 
@@ -12,31 +13,6 @@
     django_secret_key: "{{ lookup('env', 'DJANGO_SECRET_KEY') }}"
 
   tasks:
-
-    - name: Fail early if GITHUB_REPOSITORY is missing
-      ansible.builtin.assert:
-        that:
-          - github_repository | length > 0
-        fail_msg: "GITHUB_REPOSITORY is not set on the runner"
-
-    - name: Fail early if GHCR credentials are missing
-      ansible.builtin.assert:
-        that:
-          - ghcr_user | length > 0
-          - ghcr_token | length > 0
-        fail_msg: "GHCR credentials are not available"
-
-    - name: Fail early if GOOGLE_API_KEY is missing
-      ansible.builtin.assert:
-        that:
-          - google_api_key | length > 0
-        fail_msg: "GOOGLE_API_KEY is not available"
-
-    - name: Fail early if DJANGO_SECRET_KEY is missing
-      ansible.builtin.assert:
-        that:
-          - django_secret_key | length > 0
-        fail_msg: "DJANGO_SECRET_KEY is not available"
 
     - name: Install system dependencies and Docker packages
       ansible.builtin.apt:
