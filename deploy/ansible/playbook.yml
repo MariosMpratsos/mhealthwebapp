@@ -1,5 +1,4 @@
 - name: Deploy and Manage mHealth Stack
-
   hosts: vps
   become: yes
 
@@ -7,6 +6,7 @@
     remote_dir: "/opt/mhealth"
 
     github_repository: "{{ lookup('env', 'GITHUB_REPOSITORY') | lower }}"
+    image_tag: "{{ lookup('env', 'IMAGE_TAG') | default('latest', true) }}"
     ghcr_user: "{{ lookup('env', 'GHCR_USER') }}"
     ghcr_token: "{{ lookup('env', 'GHCR_TOKEN') }}"
     google_api_key: "{{ lookup('env', 'GOOGLE_API_KEY') }}"
@@ -26,10 +26,11 @@
           - python3-docker
         state: present
 
-    - name: Ensure Docker daemon is running
+    - name: Ensure Docker daemon is running and enabled
       ansible.builtin.service:
         name: docker
         state: started
+        enabled: yes
 
     - name: Create remote project folder
       ansible.builtin.file:
@@ -67,6 +68,7 @@
         pull: always
       environment:
         GITHUB_REPOSITORY: "{{ github_repository }}"
+        IMAGE_TAG: "{{ image_tag }}"
         GOOGLE_API_KEY: "{{ google_api_key }}"
         DJANGO_SECRET_KEY: "{{ django_secret_key }}"
       no_log: true
