@@ -11,17 +11,25 @@
     ghcr_token: "{{ lookup('env', 'GHCR_TOKEN') }}"
     google_api_key: "{{ lookup('env', 'GOOGLE_API_KEY') }}"
     django_secret_key: "{{ lookup('env', 'DJANGO_SECRET_KEY') }}"
+    grafana_admin_password: "{{ lookup('env', 'GRAFANA_ADMIN_PASSWORD') }}"
 
   pre_tasks:
-    - name: Fail early if required secrets are missing
-      ansible.builtin.assert:
-        that:
-          - ghcr_user | length > 0
-          - ghcr_token | length > 0
-          - google_api_key | length > 0
-          - django_secret_key | length > 0
-        fail_msg: "One or more required GitHub secrets are empty."
+    - name: Collect missing required values
+      ansible.builtin.set_fact:
+        missing_vars: >-
+          {{ {
+            'GHCR_USER': ghcr_user,
+            'GHCR_PULL_TOKEN': ghcr_token,
+            'GOOGLE_API_KEY': google_api_key,
+            'DJANGO_SECRET_KEY': django_secret_key,
+            'GRAFANA_ADMIN_PASSWORD': grafana_admin_password
+          } | dict2items | selectattr('value', 'equalto', '') | map(attribute='key') | list }}
       no_log: true
+
+    - name: Fail early if required secrets are missing
+      ansible.builtin.fail:
+        msg: "Missing or empty: {{ missing_vars | join(', ') }}"
+      when: missing_vars | length > 0
 
   tasks:
     - name: Install system dependencies and Docker packages
@@ -57,6 +65,7 @@
           IMAGE_TAG={{ image_tag }}
           GOOGLE_API_KEY={{ google_api_key }}
           DJANGO_SECRET_KEY={{ django_secret_key }}
+          GRAFANA_ADMIN_PASSWORD={{ grafana_admin_password }}
       no_log: true
 
     - name: Copy Docker Compose configuration

@@ -97,16 +97,13 @@ jobs:
 
       - name: Run Ansible Deployment Playbook
         env:
-          # Deployment metadata
           GITHUB_REPOSITORY: ${{ github.repository }}
           IMAGE_TAG: ${{ github.sha }}
-          # Registry credentials
-          GHCR_USER: ${{ secrets.GHCR_USER }}
+          GHCR_USER: ${{ github.repository_owner }}
           GHCR_TOKEN: ${{ secrets.GHCR_PULL_TOKEN }}
-          # App secrets (written to .env on the VPS)
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
-          # Optional: defaults to /opt/mhealth if the secret is unset
+          GRAFANA_ADMIN_PASSWORD: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
           REMOTE_DIR: ${{ secrets.REMOTE_DIR }}
         run: |
           ansible-playbook \
