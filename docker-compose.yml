@@ -1,7 +1,7 @@
 services:
 
   backend:
-    image: ghcr.io/${GITHUB_REPOSITORY}/mhealth-backend:latest
+    image: ghcr.io/${GITHUB_REPOSITORY}/mhealth-backend:${IMAGE_TAG:-latest}
     container_name: mhealth-backend
     restart: unless-stopped
 
@@ -20,7 +20,7 @@ services:
 
 
   frontend:
-    image: ghcr.io/${GITHUB_REPOSITORY}/mhealth-frontend:latest
+    image: ghcr.io/${GITHUB_REPOSITORY}/mhealth-frontend:${IMAGE_TAG:-latest}
     container_name: mhealth-frontend
     restart: unless-stopped
 
@@ -32,12 +32,9 @@ services:
 
 
   nginx:
-    image: nginx:1.22.1
+    image: nginx:stable
     container_name: mhealth-nginx
     restart: unless-stopped
-
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
 
     ports:
       - "80:80"
@@ -57,6 +54,14 @@ services:
   certbot:
     image: certbot/certbot:latest
     container_name: mhealth-certbot
+    restart: unless-stopped
+
+    entrypoint: >
+      /bin/sh -c "trap exit TERM;
+      while :; do
+        certbot renew --webroot -w /var/www/certbot;
+        sleep 12h & wait $${!};
+      done"
 
     volumes:
       - ./certbot/www:/var/www/certbot
@@ -68,8 +73,9 @@ services:
     container_name: mhealth-prometheus
     restart: unless-stopped
 
+    # No public port. For debugging, use an SSH tunnel to 127.0.0.1:9090:
     ports:
-      - "9090:9090"
+      - "127.0.0.1:9090:9090"
 
     volumes:
       - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
@@ -84,12 +90,13 @@ services:
     container_name: mhealth-grafana
     restart: unless-stopped
 
-    ports:
-      - "3001:3000"
+    # No published port: it's reached through nginx at /grafana/
+    expose:
+      - "3000"
 
     environment:
-      GF_SECURITY_ADMIN_USER: admin
-      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?GRAFANA_ADMIN_PASSWORD is required}
       GF_SERVER_ROOT_URL: "%(protocol)s://%(domain)s/grafana/"
       GF_SERVER_SERVE_FROM_SUB_PATH: "true"
 

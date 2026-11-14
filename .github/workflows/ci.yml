@@ -11,8 +11,6 @@ concurrency:
 
 env:
   REGISTRY: ghcr.io
-  BACKEND_IMAGE: ghcr.io/mariosmpratsos/mhealthwebapp/mhealth-backend
-  FRONTEND_IMAGE: ghcr.io/mariosmpratsos/mhealthwebapp/mhealth-frontend
 
 jobs:
   build-and-push:
@@ -23,6 +21,12 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: Compute lowercase image names
+        run: |
+          REPO="${GITHUB_REPOSITORY,,}"
+          echo "BACKEND_IMAGE=${REGISTRY}/${REPO}/mhealth-backend" >> "$GITHUB_ENV"
+          echo "FRONTEND_IMAGE=${REGISTRY}/${REPO}/mhealth-frontend" >> "$GITHUB_ENV"
 
       - name: Set up Buildx
         uses: docker/setup-buildx-action@v3
@@ -93,13 +97,17 @@ jobs:
 
       - name: Run Ansible Deployment Playbook
         env:
+          # Deployment metadata
           GITHUB_REPOSITORY: ${{ github.repository }}
           IMAGE_TAG: ${{ github.sha }}
-          GHCR_USER: ${{ github.repository_owner }}
+          # Registry credentials
+          GHCR_USER: ${{ secrets.GHCR_USER }}
           GHCR_TOKEN: ${{ secrets.GHCR_PULL_TOKEN }}
+          # App secrets (written to .env on the VPS)
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
-          ANSIBLE_HOST_KEY_CHECKING: "False"
+          # Optional: defaults to /opt/mhealth if the secret is unset
+          REMOTE_DIR: ${{ secrets.REMOTE_DIR }}
         run: |
           ansible-playbook \
             -i deploy/ansible/inventory.ini \

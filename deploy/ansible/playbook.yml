@@ -3,7 +3,7 @@
   become: yes
 
   vars:
-    remote_dir: "/opt/mhealth"
+    remote_dir: "{{ lookup('env', 'REMOTE_DIR') | default('/opt/mhealth', true) }}"
 
     github_repository: "{{ lookup('env', 'GITHUB_REPOSITORY') | lower }}"
     image_tag: "{{ lookup('env', 'IMAGE_TAG') | default('latest', true) }}"
@@ -12,8 +12,18 @@
     google_api_key: "{{ lookup('env', 'GOOGLE_API_KEY') }}"
     django_secret_key: "{{ lookup('env', 'DJANGO_SECRET_KEY') }}"
 
-  tasks:
+  pre_tasks:
+    - name: Fail early if required secrets are missing
+      ansible.builtin.assert:
+        that:
+          - ghcr_user | length > 0
+          - ghcr_token | length > 0
+          - google_api_key | length > 0
+          - django_secret_key | length > 0
+        fail_msg: "One or more required GitHub secrets are empty."
+      no_log: true
 
+  tasks:
     - name: Install system dependencies and Docker packages
       ansible.builtin.apt:
         update_cache: yes
@@ -37,6 +47,17 @@
         path: "{{ remote_dir }}"
         state: directory
         mode: "0755"
+
+    - name: Write .env file from GitHub secrets
+      ansible.builtin.copy:
+        dest: "{{ remote_dir }}/.env"
+        mode: "0600"
+        content: |
+          GITHUB_REPOSITORY={{ github_repository }}
+          IMAGE_TAG={{ image_tag }}
+          GOOGLE_API_KEY={{ google_api_key }}
+          DJANGO_SECRET_KEY={{ django_secret_key }}
+      no_log: true
 
     - name: Copy Docker Compose configuration
       ansible.builtin.copy:
@@ -66,9 +87,4 @@
         project_src: "{{ remote_dir }}"
         state: present
         pull: always
-      environment:
-        GITHUB_REPOSITORY: "{{ github_repository }}"
-        IMAGE_TAG: "{{ image_tag }}"
-        GOOGLE_API_KEY: "{{ google_api_key }}"
-        DJANGO_SECRET_KEY: "{{ django_secret_key }}"
-      no_log: true
+        remove_orphans: true
